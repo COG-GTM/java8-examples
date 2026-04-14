@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Configure PUBLIC "-" "http://www.eclipse.org/jetty/configure_9_0.dtd">
-<Configure class="org.eclipse.jetty.webapp.WebAppContext">
-    <Set name="serverClasses">
-        <Array type="java.lang.String">
-            <Item>-org.eclipse.jetty.servlet.ServletContextHandler.Decorator</Item>
-        </Array>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://eclipse.dev/jetty/configure_10.dtd">
+<Configure class="org.eclipse.jetty.ee10.webapp.WebAppContext">
+    <Set name="hiddenClassMatcher">
+        <Call name="exclude">
+            <Arg>
+                <Array type="java.lang.String">
+                    <Item>org.eclipse.jetty.ee10.servlet.DecoratingListener</Item>
+                </Array>
+            </Arg>
+        </Call>
     </Set>
 </Configure>
