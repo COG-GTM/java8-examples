@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://eclipse.dev/jetty/configure_10.dtd">
 <Configure class="org.eclipse.jetty.ee10.webapp.WebAppContext">
-    <Set name="hiddenClassMatcher">
+    <Get name="hiddenClassMatcher">
         <Call name="exclude">
             <Arg>
                 <Array type="java.lang.String">
@@ -9,5 +9,5 @@
                 </Array>
             </Arg>
         </Call>
-    </Set>
+    </Get>
 </Configure>
