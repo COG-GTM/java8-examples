@@ -3,6 +3,7 @@ package eu.infomas.examples.cdi;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,6 +19,19 @@ public class MainServlet extends HttpServlet {
     private Greeting greeting;
     @Inject
     private javax.enterprise.event.Event<String> event;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        // Jetty 10's embedded/Maven-plugin mode does not support @Inject in
+        // servlets because the Weld servlet-container decorator cannot hook
+        // into the MavenWebAppContext classloader.  Fall back to programmatic
+        // CDI lookup so the application works in both embedded and standalone
+        // deployments.
+        if (greeting == null) {
+            greeting = CDI.current().select(Greeting.class).get();
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -37,7 +51,9 @@ public class MainServlet extends HttpServlet {
         }
 
         // Test CDI event support, this event is observed by the DefaultGreeting class
-        event.fire("Simple test event");
+        if (event != null) {
+            event.fire("Simple test event");
+        }
     }
 
 }
