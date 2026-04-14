@@ -1,16 +1,16 @@
 README
 ======
 
-This is an simple setup for testing CDI ([Red Hat JBoss Weld]
+This is a simple setup for testing CDI ([Red Hat JBoss Weld]
 (https://docs.jboss.org/weld/reference/latest/en-US/html/)) and Jetty using the 
-[jetty-maven-plugin](http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html)
+[jetty-ee10-maven-plugin](https://eclipse.dev/jetty/documentation/jetty-12/programming-guide/index.html)
 
-+ Jetty 9.2.5.v20141112
-+ Weld 2.2.7.Final (CDI 1.2)
++ Jetty 12.0.14 (EE10)
++ Weld 5.1.2.Final (CDI 4.0 / Jakarta namespace)
 
 ### Running this example Application
 
-+ Check if Java 8 is used
++ Check if Java 21 is used
 + Clone this git repository
 + Go to project directory, `java8-examples`
 + Execute `mvn clean install`
@@ -19,13 +19,11 @@ This is an simple setup for testing CDI ([Red Hat JBoss Weld]
 
 ````bash
 $ mvn --version
-Apache Maven 3.2.2 (45f7c06d68e745d05611f7fd14efb6594181933e; 2014-06-17T15:51:42+02:00)
-Maven home: /usr/share/maven/apache-maven-3.2.2
-Java version: 1.8.0_25, vendor: Oracle Corporation
-Java home: /usr/lib/jvm/jdk1.8.0_25/jre
+Apache Maven 3.9.x
+Java version: 21, vendor: Oracle Corporation (or equivalent)
 Default locale: en_US, platform encoding: UTF-8
-OS name: "linux", version: "3.13.0-43-generic", arch: "amd64", family: "unix"
-$ git clone https://github.com/rmuller/java8-examples.git
+OS name: "linux", arch: "amd64", family: "unix"
+$ git clone https://github.com/COG-GTM/java8-examples.git
 Cloning into 'java8-examples'...
 remote: Counting objects: 43, done.
 remote: Compressing objects: 100% (26/26), done.
@@ -60,9 +58,9 @@ are not consistent.
 
 ### How to setup a CDI enabled application?
 
-+ Add `javax.enterprise:cdi-api:1.2`, scope `provided` to your (maven) dependencies
-+ Add `org.jboss.weld.servlet:weld-servlet:2.2.7.Final` as a dependency for
-`jetty-maven-plugin`
++ Add `jakarta.enterprise:jakarta.enterprise.cdi-api:4.0.1`, scope `provided` to your (maven) dependencies
++ Add `org.jboss.weld.servlet:weld-servlet-shaded:5.1.2.Final` as a dependency for
+`jetty-ee10-maven-plugin`
 + Managed beans must have a default constructor and may not be `final` (must be proxiable)
 + Managed beans declaring a passivating scope must be passivation capable, 
 implement `java.io.Serializable` and all `@Interceptors` must be Serializable as well
@@ -70,22 +68,15 @@ implement `java.io.Serializable` and all `@Interceptors` must be Serializable as
 ### Notes
 
 + CDI injection is available in 
-    + Servlets and Filters (Jetty 7.2+)
-    + Listeners (Jetty 9.1.1+)
-+ [Jetty 9.1.0+ requires Weld 2.2.0+](https://issues.jboss.org/browse/WELD-1561)
+    + Servlets and Filters
+    + Listeners
++ Jetty 12 EE10 requires Weld 5.x+ for CDI 4.0 / Jakarta namespace support
 + Transactional events not available in a non-Java EE environment 
 
 ### References
 
-+ [JSR 299: Contexts and Dependency Injection for the Java EE platform]
-(https://jcp.org/en/jsr/detail?id=299). CDI 1.0, Part of Java EE 6
-+ [JSR 346: Contexts and Dependency Injection for Java EE 1.1]
-(https://jcp.org/en/jsr/detail?id=346). CDI 1.1, Part of Java EE 7 release and [CDI 1.2]
-(http://www.cdi-spec.org/news/2014/04/14/CDI-1_2-released/) maintenance release 
-+ [The Java EE Tutorial, Contexts and Dependency Injection]
-(https://docs.oracle.com/javaee/7/tutorial/partcdi.htm#GJBNR)
-+ [Weld - CDI: Contexts and Dependency Injection for the Java EE platform]
-(https://docs.jboss.org/weld/reference/latest/en-US/html/index.html)
-+ [Must read about CDI 2.0](http://www.next-presso.com/2014/03/forward-cdi-2-0/)
-+ [Introduction to JNDI](http://archive.oreilly.com/pub/a/onjava/excerpt/java_servlets_ch12/index.html?page=3)
-+ [Working with Jetty JNDI](http://www.eclipse.org/jetty/documentation/current/using-jetty-jndi.html)
++ [CDI 4.0 (Jakarta Contexts and Dependency Injection)](https://jakarta.ee/specifications/cdi/4.0/)
++ [Jakarta EE 10 Specification](https://jakarta.ee/specifications/platform/10/)
++ [Weld 5.x - CDI Reference Implementation](https://docs.jboss.org/weld/reference/latest/en-US/html/index.html)
++ [Jetty 12 Documentation](https://eclipse.dev/jetty/documentation/jetty-12/index.html)
++ [Working with Jetty JNDI](https://eclipse.dev/jetty/documentation/jetty-12/programming-guide/index.html)
