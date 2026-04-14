@@ -24,6 +24,21 @@
 
     <session-config>
         <session-timeout>30</session-timeout>
+        <cookie-config>
+            <http-only>true</http-only>
+            <secure>true</secure>
+        </cookie-config>
+        <tracking-mode>COOKIE</tracking-mode>
     </session-config>
+
+    <!-- Security headers filter -->
+    <filter>
+        <filter-name>SecurityHeadersFilter</filter-name>
+        <filter-class>eu.infomas.examples.cdi.SecurityHeadersFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SecurityHeadersFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
 </web-app>

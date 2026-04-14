@@ -1,9 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Configure PUBLIC "-" "http://www.eclipse.org/jetty/configure_9_0.dtd">
+<!DOCTYPE Configure PUBLIC "-" "http://www.eclipse.org/jetty/configure_10_0.dtd">
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
     <Set name="serverClasses">
         <Array type="java.lang.String">
             <Item>-org.eclipse.jetty.servlet.ServletContextHandler.Decorator</Item>
         </Array>
     </Set>
+
+    <!--
+        HTTPS / TLS Configuration
+        =========================
+        Production deployments MUST use TLS. To enable HTTPS on port 8443:
+
+        1. Generate a keystore (example using keytool):
+           keytool -genkeypair -alias jetty -keyalg RSA -keysize 2048 \
+                   -keystore keystore.jks -validity 365
+
+        2. Configure the Jetty HTTPS connector in the jetty-maven-plugin
+           section of pom.xml or via a separate jetty-ssl.xml:
+
+           <Call name="addConnector">
+               <Arg>
+                   <New class="org.eclipse.jetty.server.ServerConnector">
+                       <Arg><Ref refid="Server"/></Arg>
+                       <Arg>
+                           <New class="org.eclipse.jetty.util.ssl.SslContextFactory$Server">
+                               <Set name="keyStorePath"><SystemProperty name="jetty.base" default="."/>/etc/keystore.jks</Set>
+                               <Set name="keyStorePassword">changeit</Set>
+                               <Set name="trustStorePath"><SystemProperty name="jetty.base" default="."/>/etc/keystore.jks</Set>
+                               <Set name="trustStorePassword">changeit</Set>
+                           </New>
+                       </Arg>
+                       <Set name="port">8443</Set>
+                   </New>
+               </Arg>
+           </Call>
+
+        3. Optionally redirect HTTP to HTTPS by adding a SecuredRedirectHandler
+           or configuring the HTTP connector with a SecureRequestCustomizer.
+    -->
 </Configure>
