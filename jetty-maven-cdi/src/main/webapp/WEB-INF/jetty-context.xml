@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Configure PUBLIC "-" "http://www.eclipse.org/jetty/configure_10_0.dtd">
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
-    <Set name="serverClasses">
-        <Array type="java.lang.String">
-            <Item>-org.eclipse.jetty.servlet.ServletContextHandler.Decorator</Item>
-        </Array>
-    </Set>
+    <!-- In Jetty 10, the legacy serverClasses manipulation used in Jetty 9 for
+         Weld CDI integration is no longer needed.  Instead, weld-servlet-shaded
+         is deployed as a webapp dependency and CDI beans are resolved via
+         CDI.current() programmatic lookup (see MainServlet).  The Decorator-based
+         approach used in Jetty 9 is incompatible with the Maven plugin's
+         MavenWebAppContext classloader isolation in Jetty 10. -->
 
     <!--
         HTTPS / TLS Configuration

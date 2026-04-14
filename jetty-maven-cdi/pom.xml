@@ -38,6 +38,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet-shaded</artifactId>
+            <version>3.1.9.Final</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -60,17 +65,10 @@
                         <port>8080</port>
                     </httpConnector>
                     <webApp>
-                        <overrideDescriptor>src/main/webapp/WEB-INF/web-overwrite.xml</overrideDescriptor>
+                        <overrideDescriptor>${project.basedir}/src/main/webapp/WEB-INF/web-overwrite.xml</overrideDescriptor>
                     </webApp>
-                    <contextXml>src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
+                    <contextXml>${project.basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jboss.weld.servlet</groupId>
-                        <artifactId>weld-servlet-core</artifactId>
-                        <version>4.0.3.Final</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
