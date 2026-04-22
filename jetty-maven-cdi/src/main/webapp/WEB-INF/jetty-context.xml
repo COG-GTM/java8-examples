@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Configure PUBLIC "-" "http://www.eclipse.org/jetty/configure_9_0.dtd">
-<Configure class="org.eclipse.jetty.webapp.WebAppContext">
-    <Set name="serverClasses">
-        <Array type="java.lang.String">
-            <Item>-org.eclipse.jetty.servlet.ServletContextHandler.Decorator</Item>
-        </Array>
-    </Set>
+<Configure class="org.eclipse.jetty.ee10.webapp.WebAppContext">
+    <!--
+        Jetty 12 reorganized the classloader isolation API. In Jetty 9 we used
+        `serverClasses` to expose the (then internal) Decorator type to the
+        webapp so Weld could register its own CDI decorator. In Jetty 12 the
+        Decorator SPI lives in `org.eclipse.jetty.ee10.servlet` and is already
+        exposed to webapps by default, so no override is required here. The
+        file is kept (and wired into the jetty-ee10-maven-plugin via
+        `<contextXml>`) as a hook for future webapp-context tweaks.
+        See: https://eclipse.dev/jetty/documentation/jetty-12/
+    -->
 </Configure>
