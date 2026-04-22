@@ -1,10 +1,10 @@
 package eu.infomas.examples.cdi;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -53,10 +53,10 @@ public class DefaultGreeting implements Greeting {
     }
 
     /**
-     * Any bean or other Java EE component which supports injection can obtain an instance of
-     * `BeanManager` via injection.
-     * Java EE components may obtain an instance of `BeanManager` from JNDI by looking up the
-     * name `java:comp/BeanManager`.
+     * Any bean or other Jakarta EE component which supports injection can obtain an instance
+     * of `BeanManager` via injection.
+     * Jakarta EE components may obtain an instance of `BeanManager` from JNDI by looking up
+     * the name `java:comp/BeanManager`.
      * Any operation of `BeanManager` may be called at any time during the execution of the
      * application.
      */
