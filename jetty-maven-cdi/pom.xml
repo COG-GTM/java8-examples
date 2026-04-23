@@ -24,7 +24,6 @@
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <version>4.0.1</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -52,7 +51,12 @@
                     <dependency>
                         <groupId>org.jboss.weld.servlet</groupId>
                         <artifactId>weld-servlet-shaded</artifactId>
-                        <version>5.1.2.Final</version>
+                        <version>5.1.5.Final</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.jetty.ee10</groupId>
+                        <artifactId>jetty-ee10-cdi</artifactId>
+                        <version>12.0.14</version>
                     </dependency>
                 </dependencies>
             </plugin>
