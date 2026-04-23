@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://eclipse.dev/jetty/configure_12.dtd">
 <Configure class="org.eclipse.jetty.ee10.webapp.WebAppContext">
-    <Call name="getServerClassMatcher">
-        <Call name="exclude">
-            <Arg>org.eclipse.jetty.ee10.servlet.ServletContextHandler$Decorator</Arg>
-        </Call>
-    </Call>
 </Configure>
