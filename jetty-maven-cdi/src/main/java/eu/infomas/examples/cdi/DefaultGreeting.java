@@ -1,10 +1,11 @@
 package eu.infomas.examples.cdi;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Inject;
 import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -53,38 +54,38 @@ public class DefaultGreeting implements Greeting {
     }
 
     /**
-     * Any bean or other Java EE component which supports injection can obtain an instance of
+     * Any bean or other Jakarta EE component which supports injection can obtain an instance of
      * `BeanManager` via injection.
-     * Java EE components may obtain an instance of `BeanManager` from JNDI by looking up the
-     * name `java:comp/BeanManager`.
+     * Jakarta EE components may obtain an instance of `BeanManager` from JNDI by looking up the
+     * name `java:comp/BeanManager`, or via the CDI API using `CDI.current().getBeanManager()`.
      * Any operation of `BeanManager` may be called at any time during the execution of the
      * application.
      */
     private BeanManager lookupBeanManager() {
-        BeanManager beanManager = null;
+        // Preferred approach: use CDI API directly
+        try {
+            return CDI.current().getBeanManager();
+        } catch (IllegalStateException ex) {
+            System.err.println("CDI.current() not available: " + ex);
+        }
+        // Fallback: try JNDI lookup
         try {
             final Context ctx = new InitialContext();
             try {
-                // JNDI name defined by spec
-                beanManager = (BeanManager) ctx.lookup("java:comp/BeanManager");
+                return (BeanManager) ctx.lookup("java:comp/BeanManager");
             } catch (NameNotFoundException nf1) {
                 System.err.println("Lookup java:comp/BeanManager failed: " + nf1);
                 try {
-                    // JNDI name used by Tomcat and Jetty
-                    beanManager = (BeanManager) ctx.lookup("java:comp/env/BeanManager");
+                    return (BeanManager) ctx.lookup("java:comp/env/BeanManager");
                 } catch (NameNotFoundException nf2) {
                     System.err.println("Lookup java:comp/env/BeanManager failed: " + nf2);
-                    // if the BeanManager is not available by JNDI we can use this static
-                    // method call as last resort.
-                    // We do not use it here because we want to test JNDI only
-                    //return CDI.current().getBeanManager();
                 }
             }
         } catch (NamingException ex) {
             System.err.println(ex);
             debugLookup();
         }
-        return beanManager;
+        return null;
     }
 
     private void debugLookup() {
