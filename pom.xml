@@ -15,4 +15,8 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
+    <modules>
+        <module>jetty-maven-cdi</module>
+    </modules>
+
 </project>
