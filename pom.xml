@@ -8,6 +8,10 @@
     <packaging>pom</packaging>
 
     <name>Example Java 8 Projects</name>
+
+    <modules>
+        <module>mortgage-calculator</module>
+    </modules>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
