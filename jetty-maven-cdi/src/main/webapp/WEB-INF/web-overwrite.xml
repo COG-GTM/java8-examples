@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         version="3.0">
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
 
+    <!-- Override descriptor applied by the Jetty Maven plugin. It overrides the
+         helloName env-entry defined in web.xml, so the running servlet reports
+         "web-overwrite.xml" as the configured name. -->
     <env-entry>
         <env-entry-name>helloName</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>web-overwrite.xml</env-entry-value>
     </env-entry>
-
-    <resource-env-ref>
-        <resource-env-ref-name>BeanManager</resource-env-ref-name>
-        <resource-env-ref-type>javax.enterprise.inject.spi.BeanManager</resource-env-ref-type>
-    </resource-env-ref>
 
 </web-app>

@@ -1,24 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         version="3.0">
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
 
-    <!-- References: http://www.eclipse.org/jetty/documentation/current/framework-weld.html
-                     https://docs.jboss.org/weld/reference/latest/en-US/html/environments.html
-         If using the BeanManagerResourceBindingListener, Jetty throws an
-         java.lang.IllegalStateException: Nothing to bind for name BeanManager when processing
-         wen[-overwrite].xml
-    <listener>
-      <listener-class>org.jboss.weld.environment.servlet.BeanManagerResourceBindingListener</listener-class>
-    </listener>
-    -->
-
-    <!-- test web-overwrite.xml, value from that file should be used. -->
+    <!-- Simple JNDI (String) env-entry. The value here ("web.xml") is overridden
+         by web-overwrite.xml when running via the Jetty Maven plugin, demonstrating
+         the overrideDescriptor mechanism. -->
     <env-entry>
-        <description>Example  of simple JDNI (String) value</description>
+        <description>Example of a simple JNDI (String) value</description>
         <env-entry-name>helloName</env-entry-name>
-        <env-entry-type>java.lang.String</env-entry-type> <!-- Fully Qualified Class Name! -->
+        <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>web.xml</env-entry-value>
     </env-entry>
 

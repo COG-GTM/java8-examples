@@ -13,24 +13,50 @@
 
     <name>jetty-maven-cdi</name>
 
+    <properties>
+        <jetty.version>12.0.21</jetty.version>
+        <weld.version>5.1.2.Final</weld.version>
+    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <version>1.2</version>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <version>4.0.1</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.el</groupId>
-                    <artifactId>javax.el-api</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>2.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet-shaded</artifactId>
+            <version>${weld.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- JUnit 5 for tests -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Weld SE based CDI testing -->
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-junit5</artifactId>
+            <version>4.0.4.Final</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -39,30 +65,28 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.4.0</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.2.5.v20141112</version>
+                <groupId>org.eclipse.jetty.ee10</groupId>
+                <artifactId>jetty-ee10-maven-plugin</artifactId>
+                <version>${jetty.version}</version>
                 <configuration>
-                    <!--
-                    No need to explicitly configure this if using default name 'jetty-env.xml'
-                    <jettyEnvXml>src/main/webapp/WEB-INF/jetty-env.xml</jettyEnvXml>
-                    -->
                     <webApp>
-                        <overrideDescriptor>src/main/webapp/WEB-INF/web-overwrite.xml</overrideDescriptor>
+                        <contextPath>/</contextPath>
+                        <overrideDescriptor>${project.basedir}/src/main/webapp/WEB-INF/web-overwrite.xml</overrideDescriptor>
                     </webApp>
-                    <contextXml>src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
+                    <contextXml>${project.basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
                 </configuration>
                 <dependencies>
+                    <!-- Jetty's EE10 CDI integration so Servlets/Filters get CDI injection. -->
                     <dependency>
-                        <groupId>org.jboss.weld.servlet</groupId>
-                        <artifactId>weld-servlet</artifactId>
-                        <version>2.2.7.Final</version>
+                        <groupId>org.eclipse.jetty.ee10</groupId>
+                        <artifactId>jetty-ee10-cdi</artifactId>
+                        <version>${jetty.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
