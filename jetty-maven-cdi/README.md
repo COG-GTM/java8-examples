@@ -1,91 +1,98 @@
 README
 ======
 
-This is an simple setup for testing CDI ([Red Hat JBoss Weld]
-(https://docs.jboss.org/weld/reference/latest/en-US/html/)) and Jetty using the 
-[jetty-maven-plugin](http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html)
+A small setup demonstrating **CDI** ([Red Hat JBoss
+Weld](https://weld.cdi-spec.org/)) on an embedded **Jetty 12** servlet container
+using the
+[jetty-ee10-maven-plugin](https://eclipse.dev/jetty/documentation/jetty-12/programming-guide/index.html#jetty-maven-plugin).
 
-+ Jetty 9.2.5.v20141112
-+ Weld 2.2.7.Final (CDI 1.2)
++ Java 21 / Jakarta EE 10
++ Jetty 12.0.x (`jetty-ee10-maven-plugin`)
++ Weld 5.1.x (CDI 4.0) via `weld-servlet-shaded`
++ JUnit 5 + `weld-junit5` for tests
 
-### Running this example Application
+> **Note on the `javax` → `jakarta` migration.** This example was upgraded from
+> Jetty 9 / Weld 2 / CDI 1.2. All `javax.*` EE namespaces were migrated to
+> `jakarta.*`, and the deployment descriptors now use the Jakarta EE 10 schemas.
 
-+ Check if Java 8 is used
-+ Clone this git repository
-+ Go to project directory, `java8-examples`
-+ Execute `mvn clean install`
-+ Go to root directory of this subproject, `jetty-maven-cdi`
-+ Start Jetty and go to `http://localhost:8080/` to view the result in your browser
+### Running this example application
 
-````bash
-$ mvn --version
-Apache Maven 3.2.2 (45f7c06d68e745d05611f7fd14efb6594181933e; 2014-06-17T15:51:42+02:00)
-Maven home: /usr/share/maven/apache-maven-3.2.2
-Java version: 1.8.0_25, vendor: Oracle Corporation
-Java home: /usr/lib/jvm/jdk1.8.0_25/jre
-Default locale: en_US, platform encoding: UTF-8
-OS name: "linux", version: "3.13.0-43-generic", arch: "amd64", family: "unix"
-$ git clone https://github.com/rmuller/java8-examples.git
-Cloning into 'java8-examples'...
-remote: Counting objects: 43, done.
-remote: Compressing objects: 100% (26/26), done.
-remote: Total 43 (delta 4), reused 38 (delta 2)
-Unpacking objects: 100% (43/43), done.
-Checking connectivity... done.
-$ cd java8-examples/
-$ mvn clean install
-[INFO] Scanning for projects...
++ Make sure Java 21 is active (`java -version`)
++ From the repository root, build everything: `./mvnw clean install`
++ Change into this module: `cd jetty-maven-cdi`
++ Start Jetty: `../mvnw jetty:run`
++ Open `http://localhost:8080/` in your browser
+
+```bash
+$ ../mvnw jetty:run
 ...
-$ cd jetty-maven-cdi/
-$ mvn jetty:run
-[INFO] Scanning for projects...
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building jetty-maven-cdi 1.0.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-...
-2014-12-26 15:49:20.915:INFO:oejs.ServerConnector:main: Started ServerConnector@2a685eba{HTTP/1.1}{0.0.0.0:8080}
-2014-12-26 15:49:20.916:INFO:oejs.Server:main: Started @3828ms
-[INFO] Started Jetty Server
-````
+[INFO] CdiSpiDecorator enabled in ServletContext@...
+INFO: WELD-ENV-001213: Jetty CDI SPI support detected, CDI injection will be available in Listeners, Servlets and Filters.
+[INFO] Started ServerConnector@...{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+[INFO] Started oejs.Server@...
+```
 
-### Jetty configuration
+The page is rendered by `HelloServlet`, which has a `GreetingService` injected
+via CDI. Each request also fires a CDI event observed by `AppEventObserver`, and
+passes through `LoggingFilter` (which is itself CDI-injected).
 
-To enable CDI, you need to configure Jetty first. Several online resources describe the 
-configuration in a different way. Most importantly the official Jetty and Weld documentation
-are not consistent.
+### What's in here
 
-+ [Jetty documentation](http://www.eclipse.org/jetty/documentation/current/framework-weld.html)
-+ [Weld documentation](https://docs.jboss.org/weld/reference/latest/en-US/html/environments.html)
+| Component | Demonstrates |
+|-----------|--------------|
+| `HelloServlet` | `@WebServlet` with `@Inject` of a CDI bean |
+| `GreetingService` | `@ApplicationScoped` bean with `@PostConstruct` |
+| `AppEventProducer` / `AppEventObserver` | `Event<T>` firing and `@Observes` |
+| `LoggingFilter` | `@WebFilter` with `@Inject` |
 
-### How to setup a CDI enabled application?
+### Jetty 12 + Weld configuration
 
-+ Add `javax.enterprise:cdi-api:1.2`, scope `provided` to your (maven) dependencies
-+ Add `org.jboss.weld.servlet:weld-servlet:2.2.7.Final` as a dependency for
-`jetty-maven-plugin`
-+ Managed beans must have a default constructor and may not be `final` (must be proxiable)
-+ Managed beans declaring a passivating scope must be passivation capable, 
-implement `java.io.Serializable` and all `@Interceptors` must be Serializable as well
+Enabling CDI on Jetty 12 is considerably simpler than on Jetty 9:
+
+1. Add the Jakarta APIs (`jakarta.servlet-api`, `jakarta.enterprise.cdi-api`,
+   `jakarta.annotation-api`) as `provided` dependencies, and
+   `weld-servlet-shaded` as a `runtime` dependency.
+2. Add `org.eclipse.jetty.ee10:jetty-ee10-cdi` as a dependency of the
+   `jetty-ee10-maven-plugin` so Jetty's CDI integration is on the container
+   classpath.
+3. Enable the integration via `WEB-INF/jetty-context.xml`, which sets the
+   `org.eclipse.jetty.cdi` context attribute to `CdiSpiDecorator`. In this mode
+   Jetty uses the Weld `BeanManager` (the CDI SPI) to decorate and inject
+   Servlets, Filters and Listeners.
+4. Provide a CDI 4.0 `WEB-INF/beans.xml` with
+   `bean-discovery-mode="annotated"`.
+
+The Jetty 9 era files are **no longer needed**:
+
++ `jetty-env.xml` (manual JNDI `BeanManager` binding via
+  `org.jboss.weld.resources.ManagerObjectFactory`) — removed. With Jetty 12 +
+  Weld 5 the `BeanManager` is wired automatically by the `CdiSpiDecorator`, so
+  no JNDI binding is required.
++ The `serverClasses` Decorator hack in `jetty-context.xml` — replaced by the
+  `org.eclipse.jetty.cdi` attribute described above.
+
+`web-overwrite.xml` is still applied by the plugin's `overrideDescriptor` and
+overrides the `helloName` JNDI `env-entry` from `web.xml`; that is why the
+running servlet greets `Hello web-overwrite.xml!`.
+
+### Building a Docker image
+
+A multi-stage [`Dockerfile`](Dockerfile) is provided. Build it from the
+repository root (the build needs the parent POM and Maven Wrapper):
+
+```bash
+docker build -f jetty-maven-cdi/Dockerfile -t jetty-maven-cdi .
+docker run --rm -p 8080:8080 jetty-maven-cdi
+```
 
 ### Notes
 
-+ CDI injection is available in 
-    + Servlets and Filters (Jetty 7.2+)
-    + Listeners (Jetty 9.1.1+)
-+ [Jetty 9.1.0+ requires Weld 2.2.0+](https://issues.jboss.org/browse/WELD-1561)
-+ Transactional events not available in a non-Java EE environment 
++ CDI injection is available in Servlets, Filters and Listeners.
++ Transactional events are not available in this non-Jakarta-EE-server
+  environment (Weld logs `WELD-000101`).
 
 ### References
 
-+ [JSR 299: Contexts and Dependency Injection for the Java EE platform]
-(https://jcp.org/en/jsr/detail?id=299). CDI 1.0, Part of Java EE 6
-+ [JSR 346: Contexts and Dependency Injection for Java EE 1.1]
-(https://jcp.org/en/jsr/detail?id=346). CDI 1.1, Part of Java EE 7 release and [CDI 1.2]
-(http://www.cdi-spec.org/news/2014/04/14/CDI-1_2-released/) maintenance release 
-+ [The Java EE Tutorial, Contexts and Dependency Injection]
-(https://docs.oracle.com/javaee/7/tutorial/partcdi.htm#GJBNR)
-+ [Weld - CDI: Contexts and Dependency Injection for the Java EE platform]
-(https://docs.jboss.org/weld/reference/latest/en-US/html/index.html)
-+ [Must read about CDI 2.0](http://www.next-presso.com/2014/03/forward-cdi-2-0/)
-+ [Introduction to JNDI](http://archive.oreilly.com/pub/a/onjava/excerpt/java_servlets_ch12/index.html?page=3)
-+ [Working with Jetty JNDI](http://www.eclipse.org/jetty/documentation/current/using-jetty-jndi.html)
++ [Jakarta Contexts and Dependency Injection 4.0](https://jakarta.ee/specifications/cdi/4.0/)
++ [Eclipse Jetty 12 — Programming Guide](https://eclipse.dev/jetty/documentation/jetty-12/programming-guide/index.html)
++ [Weld — CDI Reference Implementation](https://weld.cdi-spec.org/)
