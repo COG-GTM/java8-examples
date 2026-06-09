@@ -1,0 +1,26 @@
+name: Java 11 Build
+
+on:
+  push:
+    branches: [ master, 'devin/**' ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+          cache: maven
+
+      - name: Build and test
+        run: mvn -B clean install
+
+      - name: Verify war artifact
+        run: ls -la jetty-maven-cdi/target/jetty-maven-cdi-*.war
