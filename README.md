@@ -1,12 +1,25 @@
 README
 ======
 
-This repository contains simple example projects of various Java 8 based projects.
+This repository contains simple example projects of various Java based projects.
 
-All examples are developed and tested using the following software stack:
+The codebase was migrated from Java 8 to **Java 11 (LTS)**. See
+[`MIGRATION_NOTES.md`](MIGRATION_NOTES.md) for details.
 
-+ Ubuntu 14.04.1 LTS
-+ Oracle Java (JDK) 1.8.0_25
-+ NetBeans IDE 8.0.2 (Build 201411181905)
-+ Apache Maven 3.2.2
+Requirements
+------------
 
++ JDK 11 (e.g. Eclipse Temurin / Adoptium 11). The build enforces `>= 11`.
++ Apache Maven 3.6+
+
+Build
+-----
+
+From the repository root (builds all modules):
+
+```bash
+mvn clean verify
+```
+
+Continuous integration builds on Temurin JDK 11 via GitHub Actions
+(`.github/workflows/build.yml`).

@@ -32,6 +32,29 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--
+        javax.annotation (JSR-250, e.g. @PostConstruct) was part of the JDK
+        through Java 8 but removed from Java 11. It is provided at runtime by
+        the Weld/Jetty container, so it is only needed to compile against.
+        -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--
+        Weld (CDI reference implementation) is packaged into WEB-INF/lib so the
+        webapp classloader can see the CDI implementation directly. With the
+        Jetty 9.2 plugin this lived only on the plugin classpath; Jetty 9.4's
+        stricter classloader isolation requires it inside the war.
+        -->
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet</artifactId>
+            <version>2.4.8.Final</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -39,7 +62,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.5</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
@@ -47,7 +69,7 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.2.5.v20141112</version>
+                <version>9.4.53.v20231009</version>
                 <configuration>
                     <!--
                     No need to explicitly configure this if using default name 'jetty-env.xml'
@@ -57,14 +79,21 @@
                         <overrideDescriptor>src/main/webapp/WEB-INF/web-overwrite.xml</overrideDescriptor>
                     </webApp>
                     <contextXml>src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
+                    <!--
+                    jetty-maven-plugin 9.2 wired Jetty's JNDI provider implicitly;
+                    9.4 requires these to be set so jetty-env.xml / env-entries resolve.
+                    -->
+                    <systemProperties>
+                        <systemProperty>
+                            <name>java.naming.factory.initial</name>
+                            <value>org.eclipse.jetty.jndi.InitialContextFactory</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>java.naming.factory.url.pkgs</name>
+                            <value>org.eclipse.jetty.jndi</value>
+                        </systemProperty>
+                    </systemProperties>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jboss.weld.servlet</groupId>
-                        <artifactId>weld-servlet</artifactId>
-                        <version>2.2.7.Final</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
