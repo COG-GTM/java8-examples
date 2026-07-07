@@ -10,7 +10,7 @@ This is an simple setup for testing CDI ([Red Hat JBoss Weld]
 
 ### Running this example Application
 
-+ Check if Java 8 is used
++ Check if Java 21 is used
 + Clone this git repository
 + Go to project directory, `java8-examples`
 + Execute `mvn clean install`
