@@ -13,24 +13,49 @@
 
     <name>jetty-maven-cdi</name>
 
+    <properties>
+        <jetty.version>12.0.21</jetty.version>
+        <weld.version>5.1.7.Final</weld.version>
+    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <version>1.2</version>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <version>4.0.1</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>javax.el</groupId>
-                    <artifactId>javax.el-api</artifactId>
+                    <groupId>jakarta.el</groupId>
+                    <artifactId>jakarta.el-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>2.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--
+        Weld (CDI 4.0 reference implementation), packaged as an all-in-one shaded
+        jar compatible with Jakarta EE 10 (Servlet 6, CDI 4). Unlike Jetty 9, in
+        Jetty 12 the webapp classloader isolates the webapp from server/plugin
+        classes, so Weld must live on the webapp classpath (runtime scope) for its
+        ServletContainerInitializer to bootstrap CDI and for the JNDI BeanManager
+        resource-env-ref type to resolve.
+        -->
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet-shaded</artifactId>
+            <version>${weld.version}</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 
@@ -39,30 +64,34 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.4.0</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.2.5.v20141112</version>
+                <groupId>org.eclipse.jetty.ee10</groupId>
+                <artifactId>jetty-ee10-maven-plugin</artifactId>
+                <version>${jetty.version}</version>
                 <configuration>
-                    <!--
-                    No need to explicitly configure this if using default name 'jetty-env.xml'
-                    <jettyEnvXml>src/main/webapp/WEB-INF/jetty-env.xml</jettyEnvXml>
-                    -->
+                    <!-- Paths are anchored to ${project.basedir} so that the plugin works
+                         both from the module directory (mvn jetty:run) and from the reactor
+                         root (mvn -pl jetty-maven-cdi jetty:run). The default-named
+                         WEB-INF/jetty-env.xml is picked up automatically. -->
                     <webApp>
-                        <overrideDescriptor>src/main/webapp/WEB-INF/web-overwrite.xml</overrideDescriptor>
+                        <overrideDescriptor>${project.basedir}/src/main/webapp/WEB-INF/web-overwrite.xml</overrideDescriptor>
                     </webApp>
-                    <contextXml>src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
+                    <contextXml>${project.basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
                 </configuration>
                 <dependencies>
+                    <!-- Jetty CDI integration: provides the CdiServletContainerInitializer
+                         that installs the CdiDecoratingListener so that Weld's decorator
+                         is used to inject Servlets, Filters and Listeners. This is the
+                         Jetty 12 replacement for the Jetty 9 'cdi-decorate' module. -->
                     <dependency>
-                        <groupId>org.jboss.weld.servlet</groupId>
-                        <artifactId>weld-servlet</artifactId>
-                        <version>2.2.7.Final</version>
+                        <groupId>org.eclipse.jetty.ee10</groupId>
+                        <artifactId>jetty-ee10-cdi</artifactId>
+                        <version>${jetty.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

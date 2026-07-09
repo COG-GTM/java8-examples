@@ -5,12 +5,12 @@ This is an simple setup for testing CDI ([Red Hat JBoss Weld]
 (https://docs.jboss.org/weld/reference/latest/en-US/html/)) and Jetty using the 
 [jetty-maven-plugin](http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html)
 
-+ Jetty 9.2.5.v20141112
-+ Weld 2.2.7.Final (CDI 1.2)
++ Jetty 12.0.x (Jakarta EE 10 / `ee10` environment)
++ Weld 5.1.x (CDI 4.0)
 
 ### Running this example Application
 
-+ Check if Java 8 is used
++ Check if Java 21 is used
 + Clone this git repository
 + Go to project directory, `java8-examples`
 + Execute `mvn clean install`
@@ -19,13 +19,11 @@ This is an simple setup for testing CDI ([Red Hat JBoss Weld]
 
 ````bash
 $ mvn --version
-Apache Maven 3.2.2 (45f7c06d68e745d05611f7fd14efb6594181933e; 2014-06-17T15:51:42+02:00)
-Maven home: /usr/share/maven/apache-maven-3.2.2
-Java version: 1.8.0_25, vendor: Oracle Corporation
-Java home: /usr/lib/jvm/jdk1.8.0_25/jre
+Apache Maven 3.9.7
+Java version: 21, vendor: Eclipse Adoptium
 Default locale: en_US, platform encoding: UTF-8
-OS name: "linux", version: "3.13.0-43-generic", arch: "amd64", family: "unix"
-$ git clone https://github.com/rmuller/java8-examples.git
+OS name: "linux", arch: "amd64", family: "unix"
+$ git clone https://github.com/COG-GTM/java8-examples.git
 Cloning into 'java8-examples'...
 remote: Counting objects: 43, done.
 remote: Compressing objects: 100% (26/26), done.
@@ -60,20 +58,24 @@ are not consistent.
 
 ### How to setup a CDI enabled application?
 
-+ Add `javax.enterprise:cdi-api:1.2`, scope `provided` to your (maven) dependencies
-+ Add `org.jboss.weld.servlet:weld-servlet:2.2.7.Final` as a dependency for
-`jetty-maven-plugin`
++ Add `jakarta.enterprise:jakarta.enterprise.cdi-api:4.0.1`, scope `provided` to your (maven) dependencies
++ Add `org.jboss.weld.servlet:weld-servlet-shaded:5.1.x` (scope `runtime`) to your (maven)
+dependencies. In Jetty 12 the web application classloader is isolated from the server /
+plugin classpath, so Weld must be packaged with the web application for its
+`ServletContainerInitializer` to bootstrap CDI (in Jetty 9 it was a `jetty-maven-plugin`
+dependency instead)
++ Add `org.eclipse.jetty.ee10:jetty-ee10-cdi:12.0.x` as a dependency for the
+`jetty-ee10-maven-plugin`; it installs the `CdiDecoratingListener` (the Jetty 12
+replacement for the old Jetty 9 `cdi-decorate` module)
 + Managed beans must have a default constructor and may not be `final` (must be proxiable)
 + Managed beans declaring a passivating scope must be passivation capable, 
 implement `java.io.Serializable` and all `@Interceptors` must be Serializable as well
 
 ### Notes
 
-+ CDI injection is available in 
-    + Servlets and Filters (Jetty 7.2+)
-    + Listeners (Jetty 9.1.1+)
-+ [Jetty 9.1.0+ requires Weld 2.2.0+](https://issues.jboss.org/browse/WELD-1561)
-+ Transactional events not available in a non-Java EE environment 
++ CDI injection is available in Servlets, Filters and Listeners
++ Jetty 11+ / Jakarta EE requires Weld 5.x (CDI 4.0)
++ Transactional events not available in a non-Jakarta EE environment 
 
 ### References
 

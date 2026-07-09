@@ -1,12 +1,10 @@
 README
 ======
 
-This repository contains simple example projects of various Java 8 based projects.
+This repository contains simple example projects of various Java based projects.
 
-All examples are developed and tested using the following software stack:
+The examples have been upgraded to the following software stack:
 
-+ Ubuntu 14.04.1 LTS
-+ Oracle Java (JDK) 1.8.0_25
-+ NetBeans IDE 8.0.2 (Build 201411181905)
-+ Apache Maven 3.2.2
++ Java (JDK) 21 (latest LTS)
++ Apache Maven 3.9+
 
