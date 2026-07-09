@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Configure PUBLIC "-" "http://www.eclipse.org/jetty/configure_9_0.dtd">
-<Configure class="org.eclipse.jetty.webapp.WebAppContext">
-    <Set name="serverClasses">
-        <Array type="java.lang.String">
-            <Item>-org.eclipse.jetty.servlet.ServletContextHandler.Decorator</Item>
-        </Array>
-    </Set>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://jetty.org/configure_10_0.dtd">
+<Configure class="org.eclipse.jetty.ee10.webapp.WebAppContext">
+    <!--
+    Enable Jetty's CDI integration for this web application. In Jetty 12 the
+    old Jetty 9 'serverClasses' Decorator trick is replaced by the
+    CdiServletContainerInitializer (from jetty-ee10-cdi), which is told which
+    integration mode to use via the 'org.eclipse.jetty.cdi' attribute.
+    'CdiDecoratingListener' lets Weld register its own decorator so that CDI
+    injection works in Servlets, Filters and Listeners.
+    -->
+    <Call name="setAttribute">
+        <Arg>org.eclipse.jetty.cdi</Arg>
+        <Arg>CdiDecoratingListener</Arg>
+    </Call>
 </Configure>
