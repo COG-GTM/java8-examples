@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://www.eclipse.org/jetty/configure_10_0.dtd">
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
-    <Set name="serverClasses">
-        <Array type="java.lang.String">
-            <Item>-org.eclipse.jetty.servlet.ServletContextHandler.Decorator</Item>
-        </Array>
-    </Set>
+    <!-- Jetty 11 hides the CDI API from the webapp classloader by default; expose the
+         Weld decorator and the Jakarta CDI/Inject APIs so injection and the BeanManager
+         resource-env-ref resolve against the plugin's Weld runtime. -->
+    <Call name="getServerClassMatcher">
+        <Call name="add">
+            <Arg>-org.eclipse.jetty.servlet.ServletContextHandler.Decorator</Arg>
+        </Call>
+    </Call>
+    <Call name="getServerClassMatcher">
+        <Call name="add">
+            <Arg>-jakarta.enterprise.</Arg>
+        </Call>
+    </Call>
+    <Call name="getServerClassMatcher">
+        <Call name="add">
+            <Arg>-jakarta.inject.</Arg>
+        </Call>
+    </Call>
 </Configure>
