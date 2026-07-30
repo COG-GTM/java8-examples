@@ -5,17 +5,27 @@ This is an simple setup for testing CDI ([Red Hat JBoss Weld]
 (https://docs.jboss.org/weld/reference/latest/en-US/html/)) and Jetty using the 
 [jetty-maven-plugin](http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html)
 
-+ Jetty 9.2.5.v20141112
-+ Weld 2.2.7.Final (CDI 1.2)
++ Java 17
++ Jetty 10.0.25
++ Weld 3.1.9.Final (CDI 2.0)
+
+The `javax.*` namespace is retained (no `jakarta.*` migration), which makes Jetty 10
+the terminal choice: Jetty 11+ is `jakarta`-only. Note that Jetty 10 is past end-of-life.
 
 ### Running this example Application
 
-+ Check if Java 8 is used
++ Check that Java 17 is used
 + Clone this git repository
 + Go to project directory, `java8-examples`
 + Execute `mvn clean install`
 + Go to root directory of this subproject, `jetty-maven-cdi`
-+ Start Jetty and go to `http://localhost:8080/` to view the result in your browser
++ Run `mvn jetty:run-war` and go to `http://localhost:8080/` to view the result in your browser
+
+**Use `jetty:run-war`, not `jetty:run`.** The example demonstrates the `BeanManager`
+JNDI binding from `jetty-env.xml`, which Weld's `ManagerObjectFactory` only resolves for a
+bean archive whose id contains `WEB-INF/classes`. `jetty:run` serves classes from
+`target/classes`, so the JNDI lookup fails (`WELD-001300`); the assembled WAR run by
+`jetty:run-war` resolves it. CDI injection into the servlet works under both.
 
 ````bash
 $ mvn --version
@@ -37,7 +47,7 @@ $ mvn clean install
 [INFO] Scanning for projects...
 ...
 $ cd jetty-maven-cdi/
-$ mvn jetty:run
+$ mvn jetty:run-war
 [INFO] Scanning for projects...
 [INFO]                                                                         
 [INFO] ------------------------------------------------------------------------
@@ -60,9 +70,15 @@ are not consistent.
 
 ### How to setup a CDI enabled application?
 
-+ Add `javax.enterprise:cdi-api:1.2`, scope `provided` to your (maven) dependencies
-+ Add `org.jboss.weld.servlet:weld-servlet:2.2.7.Final` as a dependency for
-`jetty-maven-plugin`
++ Add `javax.enterprise:cdi-api:2.0.SP1` and `javax.annotation:javax.annotation-api:1.3.2`,
+scope `provided`, to your (maven) dependencies (the latter is required to compile
+`@PostConstruct` on Java 11+, since it was removed from the JDK)
++ Add `org.jboss.weld.servlet:weld-servlet-shaded:3.1.9.Final`, scope `runtime`, as a
+*webapp* dependency so Weld is bundled in `WEB-INF/lib` (Jetty provides no CDI)
++ Add `org.eclipse.jetty:jetty-cdi:10.0.25` as a dependency of `jetty-maven-plugin`, and set
+the context init-param `org.eclipse.jetty.cdi=CdiDecoratingListener` (see `jetty-context.xml`).
+Jetty 10 removed the `ServletContextHandler.Decorator` that older Weld auto-detection relied
+on; `jetty-cdi` installs the `CdiDecoratingListener` that Weld hooks into for servlet injection
 + Managed beans must have a default constructor and may not be `final` (must be proxiable)
 + Managed beans declaring a passivating scope must be passivation capable, 
 implement `java.io.Serializable` and all `@Interceptors` must be Serializable as well
