@@ -4,7 +4,6 @@
         <actionName>CUSTOM-jetty:run-war</actionName>
         <displayName>jetty:run-war</displayName>
         <goals>
-            <goal>package</goal>
             <goal>jetty:run-war</goal>
         </goals>
     </action>

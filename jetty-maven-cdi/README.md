@@ -29,12 +29,10 @@ bean archive whose id contains `WEB-INF/classes`. `jetty:run` serves classes fro
 
 ````bash
 $ mvn --version
-Apache Maven 3.2.2 (45f7c06d68e745d05611f7fd14efb6594181933e; 2014-06-17T15:51:42+02:00)
-Maven home: /usr/share/maven/apache-maven-3.2.2
-Java version: 1.8.0_25, vendor: Oracle Corporation
-Java home: /usr/lib/jvm/jdk1.8.0_25/jre
+Apache Maven 3.9.6
+Java version: 17.0.13, vendor: Eclipse Adoptium
 Default locale: en_US, platform encoding: UTF-8
-OS name: "linux", version: "3.13.0-43-generic", arch: "amd64", family: "unix"
+OS name: "linux", arch: "amd64", family: "unix"
 $ git clone https://github.com/rmuller/java8-examples.git
 Cloning into 'java8-examples'...
 remote: Counting objects: 43, done.
@@ -49,13 +47,15 @@ $ mvn clean install
 $ cd jetty-maven-cdi/
 $ mvn jetty:run-war
 [INFO] Scanning for projects...
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
 [INFO] Building jetty-maven-cdi 1.0.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
 ...
-2014-12-26 15:49:20.915:INFO:oejs.ServerConnector:main: Started ServerConnector@2a685eba{HTTP/1.1}{0.0.0.0:8080}
-2014-12-26 15:49:20.916:INFO:oejs.Server:main: Started @3828ms
+INFO: WELD-000900: 3.1.9 (Final)
+INFO: WELD-ENV-001212: Jetty CdiDecoratingListener support detected, CDI injection will be available in Listeners, Servlets and Filters.
+DefaultGreeting#init()
+BeanManager injection succeeded
+BeanManager JNDI lookup succeeded
+INFO:oejs.Server:main: Started Server@...{STARTING}[10.0.25]
+INFO:oejs.AbstractConnector:main: Started ServerConnector@...{HTTP/1.1}{0.0.0.0:8080}
 [INFO] Started Jetty Server
 ````
 
@@ -85,10 +85,10 @@ implement `java.io.Serializable` and all `@Interceptors` must be Serializable as
 
 ### Notes
 
-+ CDI injection is available in 
-    + Servlets and Filters (Jetty 7.2+)
-    + Listeners (Jetty 9.1.1+)
-+ [Jetty 9.1.0+ requires Weld 2.2.0+](https://issues.jboss.org/browse/WELD-1561)
++ CDI injection into Servlets, Filters and Listeners is enabled on Jetty 10 via
+`jetty-cdi` + the `org.eclipse.jetty.cdi=CdiDecoratingListener` context init-param
++ Jetty 10 removed the `ServletContextHandler.Decorator` hook that older Weld/Jetty
+auto-detection used; the init-param above is the Jetty 10 replacement
 + Transactional events not available in a non-Java EE environment 
 
 ### References
