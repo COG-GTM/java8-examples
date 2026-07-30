@@ -5,47 +5,41 @@ This is an simple setup for testing CDI ([Red Hat JBoss Weld]
 (https://docs.jboss.org/weld/reference/latest/en-US/html/)) and Jetty using the 
 [jetty-maven-plugin](http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html)
 
-+ Jetty 9.2.5.v20141112
-+ Weld 2.2.7.Final (CDI 1.2)
++ Jetty 9.4.57.v20241219
++ Weld 2.4.8.Final (CDI 1.2)
 
 ### Running this example Application
 
-+ Check if Java 8 is used
++ Check if Java 17 is used
 + Clone this git repository
 + Go to project directory, `java8-examples`
 + Execute `mvn clean install`
 + Go to root directory of this subproject, `jetty-maven-cdi`
 + Start Jetty and go to `http://localhost:8080/` to view the result in your browser
 
+Weld 2.4 generates its client proxies with `ClassLoader.defineClass` via reflection, which
+is not accessible by default on Java 17, so `jetty:run` needs
+`MAVEN_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED"` (see the transcript below).
+
 ````bash
 $ mvn --version
-Apache Maven 3.2.2 (45f7c06d68e745d05611f7fd14efb6594181933e; 2014-06-17T15:51:42+02:00)
-Maven home: /usr/share/maven/apache-maven-3.2.2
-Java version: 1.8.0_25, vendor: Oracle Corporation
-Java home: /usr/lib/jvm/jdk1.8.0_25/jre
-Default locale: en_US, platform encoding: UTF-8
-OS name: "linux", version: "3.13.0-43-generic", arch: "amd64", family: "unix"
+Apache Maven 3.6.3
+Java version: 17.0.13, vendor: Ubuntu, runtime: /usr/lib/jvm/java-17-openjdk-amd64
+OS name: "linux", version: "5.15.200", arch: "amd64", family: "unix"
 $ git clone https://github.com/rmuller/java8-examples.git
 Cloning into 'java8-examples'...
-remote: Counting objects: 43, done.
-remote: Compressing objects: 100% (26/26), done.
-remote: Total 43 (delta 4), reused 38 (delta 2)
-Unpacking objects: 100% (43/43), done.
-Checking connectivity... done.
 $ cd java8-examples/
 $ mvn clean install
 [INFO] Scanning for projects...
 ...
 $ cd jetty-maven-cdi/
+$ export MAVEN_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED"
 $ mvn jetty:run
 [INFO] Scanning for projects...
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building jetty-maven-cdi 1.0.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
 ...
-2014-12-26 15:49:20.915:INFO:oejs.ServerConnector:main: Started ServerConnector@2a685eba{HTTP/1.1}{0.0.0.0:8080}
-2014-12-26 15:49:20.916:INFO:oejs.Server:main: Started @3828ms
+INFO: WELD-000900: 2.4.8 (Final)
+INFO: WELD-ENV-001200: Jetty 7.2+ detected, CDI injection will be available in Servlets and Filters.
+[INFO] Started ServerConnector@11bfffb3{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
 [INFO] Started Jetty Server
 ````
 
@@ -61,7 +55,7 @@ are not consistent.
 ### How to setup a CDI enabled application?
 
 + Add `javax.enterprise:cdi-api:1.2`, scope `provided` to your (maven) dependencies
-+ Add `org.jboss.weld.servlet:weld-servlet:2.2.7.Final` as a dependency for
++ Add `org.jboss.weld.servlet:weld-servlet:2.4.8.Final` as a dependency for
 `jetty-maven-plugin`
 + Managed beans must have a default constructor and may not be `final` (must be proxiable)
 + Managed beans declaring a passivating scope must be passivation capable, 
