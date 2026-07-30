@@ -11,9 +11,10 @@
         <Arg>CdiSpiDecorator</Arg>
     </Call>
     <!-- jetty-cdi lives on the container classpath, so it must be scanned for its
-         ServletContainerInitializer -->
+         ServletContainerInitializer. This attribute is single valued and overwrites the
+         default of jetty-maven-plugin, so the default patterns are repeated here. -->
     <Call name="setAttribute">
         <Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
-        <Arg>.*/jetty-cdi-[^/]*\.jar$</Arg>
+        <Arg>.*/javax.servlet-[^/]*\.jar$|.*/jetty-servlet-api-[^/]*\.jar$|.*javax.servlet.jsp.jstl-[^/]*\.jar|.*taglibs-standard-impl-.*\.jar|.*/jetty-cdi-[^/]*\.jar$</Arg>
     </Call>
 </Configure>
