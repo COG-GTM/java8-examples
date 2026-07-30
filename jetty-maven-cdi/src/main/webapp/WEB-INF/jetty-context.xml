@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Configure PUBLIC "-" "http://www.eclipse.org/jetty/configure_9_0.dtd">
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://www.eclipse.org/jetty/configure_10_0.dtd">
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
-    <Set name="serverClasses">
-        <Array type="java.lang.String">
-            <Item>-org.eclipse.jetty.servlet.ServletContextHandler.Decorator</Item>
-        </Array>
-    </Set>
+    <!--
+    Jetty 10 ships its own CDI integration (jetty-cdi). 'CdiSpiDecorator' lets Jetty decorate
+    (inject into) servlets, filters and listeners through the standard CDI SPI (BeanManager),
+    so no Weld specific container integration is needed.
+    -->
+    <Call name="setAttribute">
+        <Arg>org.eclipse.jetty.cdi</Arg>
+        <Arg>CdiSpiDecorator</Arg>
+    </Call>
+    <!-- jetty-cdi lives on the container classpath, so it must be scanned for its
+         ServletContainerInitializer -->
+    <Call name="setAttribute">
+        <Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
+        <Arg>.*/jetty-cdi-[^/]*\.jar$</Arg>
+    </Call>
 </Configure>
