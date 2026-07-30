@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Configure PUBLIC "-" "http://www.eclipse.org/jetty/configure_9_0.dtd">
-<Configure class="org.eclipse.jetty.webapp.WebAppContext">
-    <Set name="serverClasses">
-        <Array type="java.lang.String">
-            <Item>-org.eclipse.jetty.servlet.ServletContextHandler.Decorator</Item>
-        </Array>
-    </Set>
+<!DOCTYPE Configure PUBLIC "-" "http://www.eclipse.org/jetty/configure_10_0.dtd">
+<Configure id="contextWac" class="org.eclipse.jetty.webapp.WebAppContext">
+    <!--
+    Jetty 10 integrates CDI through org.eclipse.jetty.cdi.CdiServletContainerInitializer.
+    In 'CdiDecoratingListener' mode Jetty exposes a decorator hook that Weld fills in with
+    its own org.jboss.weld.environment.jetty.WeldDecorator, so no classloader tweaking
+    (the Jetty 9 'serverClasses' hack, whose setServerClasses(String[]) setter no longer
+    exists) is needed.
+    -->
+    <Call name="setInitParameter">
+        <Arg>org.eclipse.jetty.cdi</Arg>
+        <Arg>CdiDecoratingListener</Arg>
+    </Call>
+    <Call name="addBean">
+        <Arg>
+            <New class="org.eclipse.jetty.servlet.ServletContextHandler$Initializer">
+                <Arg><Ref refid="contextWac" /></Arg>
+                <Arg>
+                    <New class="org.eclipse.jetty.cdi.CdiServletContainerInitializer" />
+                </Arg>
+            </New>
+        </Arg>
+    </Call>
 </Configure>

@@ -14,6 +14,17 @@
     </listener>
     -->
 
+    <!--
+    Weld's org.jboss.weld.resources.ManagerObjectFactory (used by the JNDI binding in
+    jetty-env.xml) resolves the BeanManager of the 'flat' bean deployment archive, or of an
+    archive deployed from /WEB-INF/classes. When running from jetty:run the classes live in
+    target/classes, so disable bean archive isolation to get a single, flat archive.
+    -->
+    <context-param>
+        <param-name>org.jboss.weld.environment.servlet.archive.isolation</param-name>
+        <param-value>false</param-value>
+    </context-param>
+
     <!-- test web-overwrite.xml, value from that file should be used. -->
     <env-entry>
         <description>Example  of simple JDNI (String) value</description>
