@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
     <action>
-        <actionName>CUSTOM-jetty:run</actionName>
-        <displayName>jetty:run</displayName>
+        <actionName>CUSTOM-jetty:run-war</actionName>
+        <displayName>jetty:run-war</displayName>
         <goals>
-            <goal>jetty:run</goal>
+            <goal>package</goal>
+            <goal>jetty:run-war</goal>
         </goals>
     </action>
 </actions>
