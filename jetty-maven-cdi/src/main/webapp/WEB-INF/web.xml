@@ -14,6 +14,14 @@
     </listener>
     -->
 
+    <!-- Weld 3 isolates bean archives by default. The BeanManager object factory bound
+         in jetty-env.xml can only resolve a single ('flat') bean deployment archive, so
+         disable isolation to keep the java:comp/env/BeanManager lookup working. -->
+    <context-param>
+        <param-name>org.jboss.weld.environment.servlet.archive.isolation</param-name>
+        <param-value>false</param-value>
+    </context-param>
+
     <!-- test web-overwrite.xml, value from that file should be used. -->
     <env-entry>
         <description>Example  of simple JDNI (String) value</description>
