@@ -13,24 +13,42 @@
 
     <name>jetty-maven-cdi</name>
 
+    <properties>
+        <jetty.version>11.0.26</jetty.version>
+        <weld.version>4.0.3.Final</weld.version>
+    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>5.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <version>1.2</version>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <version>3.0.1</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>javax.el</groupId>
-                    <artifactId>javax.el-api</artifactId>
+                    <groupId>jakarta.el</groupId>
+                    <artifactId>jakarta.el-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>2.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Weld ships the CDI implementation (and API) inside the web application -->
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet-shaded</artifactId>
+            <version>${weld.version}</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 
@@ -39,7 +57,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.4.0</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
@@ -47,7 +65,7 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.2.5.v20141112</version>
+                <version>${jetty.version}</version>
                 <configuration>
                     <!--
                     No need to explicitly configure this if using default name 'jetty-env.xml'
@@ -60,9 +78,9 @@
                 </configuration>
                 <dependencies>
                     <dependency>
-                        <groupId>org.jboss.weld.servlet</groupId>
-                        <artifactId>weld-servlet</artifactId>
-                        <version>2.2.7.Final</version>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-cdi</artifactId>
+                        <version>${jetty.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
