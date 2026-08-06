@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Configure PUBLIC "-" "http://www.eclipse.org/jetty/configure_9_0.dtd">
+<!DOCTYPE Configure PUBLIC "-" "https://jetty.org/configure_10_0.dtd">
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
+    <!--
+    Jetty 9 required the internal ServletContextHandler.Decorator API to be exposed to the
+    web application (by removing it from the server classes) before Weld could decorate
+    Servlets, Filters and Listeners:
+
     <Set name="serverClasses">
         <Array type="java.lang.String">
             <Item>-org.eclipse.jetty.servlet.ServletContextHandler.Decorator</Item>
         </Array>
     </Set>
+
+    Jetty 10+ ships the 'jetty-cdi' module instead (a dependency of the jetty-maven-plugin
+    below). Its ServletContainerInitializer installs the CdiSpiDecorator, which performs the
+    injection through the CDI SPI, so no server class has to be exposed anymore.
+    -->
 </Configure>
