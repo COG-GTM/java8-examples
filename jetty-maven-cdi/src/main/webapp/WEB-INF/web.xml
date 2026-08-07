@@ -4,6 +4,15 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
 
+    <context-param>
+        <param-name>org.eclipse.jetty.cdi</param-name>
+        <param-value>CdiDecoratingListener</param-value>
+    </context-param>
+    <context-param>
+        <param-name>org.jboss.weld.environment.servlet.archive.isolation</param-name>
+        <param-value>false</param-value>
+    </context-param>
+
     <!-- References: http://www.eclipse.org/jetty/documentation/current/framework-weld.html
                      https://docs.jboss.org/weld/reference/latest/en-US/html/environments.html
          If using the BeanManagerResourceBindingListener, Jetty throws an
