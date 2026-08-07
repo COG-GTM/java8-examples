@@ -5,12 +5,15 @@ This is an simple setup for testing CDI ([Red Hat JBoss Weld]
 (https://docs.jboss.org/weld/reference/latest/en-US/html/)) and Jetty using the 
 [jetty-maven-plugin](http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html)
 
-+ Jetty 9.2.5.v20141112
-+ Weld 2.2.7.Final (CDI 1.2)
++ Java 17
++ Jetty 10.0.25
++ Weld 3.1.9.Final
++ Apache Maven 3.9.6
++ javax.* namespace retained
 
 ### Running this example Application
 
-+ Check if Java 8 is used
++ Check if Java 17 is used
 + Clone this git repository
 + Go to project directory, `java8-examples`
 + Execute `mvn clean install`
@@ -60,9 +63,7 @@ are not consistent.
 
 ### How to setup a CDI enabled application?
 
-+ Add `javax.enterprise:cdi-api:1.2`, scope `provided` to your (maven) dependencies
-+ Add `org.jboss.weld.servlet:weld-servlet:2.2.7.Final` as a dependency for
-`jetty-maven-plugin`
++ Add the CDI and Weld dependencies to your (Maven) dependencies
 + Managed beans must have a default constructor and may not be `final` (must be proxiable)
 + Managed beans declaring a passivating scope must be passivation capable, 
 implement `java.io.Serializable` and all `@Interceptors` must be Serializable as well

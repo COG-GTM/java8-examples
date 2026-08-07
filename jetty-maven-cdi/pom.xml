@@ -17,13 +17,13 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
+            <version>4.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <version>1.2</version>
+            <version>2.0.SP1</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -32,6 +32,17 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet-shaded</artifactId>
+            <version>3.1.9.Final</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -39,7 +50,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.5.1</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
@@ -47,7 +58,7 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.2.5.v20141112</version>
+                <version>10.0.25</version>
                 <configuration>
                     <!--
                     No need to explicitly configure this if using default name 'jetty-env.xml'
@@ -60,9 +71,9 @@
                 </configuration>
                 <dependencies>
                     <dependency>
-                        <groupId>org.jboss.weld.servlet</groupId>
-                        <artifactId>weld-servlet</artifactId>
-                        <version>2.2.7.Final</version>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-cdi</artifactId>
+                        <version>10.0.25</version>
                     </dependency>
                 </dependencies>
             </plugin>
