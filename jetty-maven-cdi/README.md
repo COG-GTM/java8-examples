@@ -5,12 +5,13 @@ This is an simple setup for testing CDI ([Red Hat JBoss Weld]
 (https://docs.jboss.org/weld/reference/latest/en-US/html/)) and Jetty using the 
 [jetty-maven-plugin](http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html)
 
-+ Jetty 9.2.5.v20141112
-+ Weld 2.2.7.Final (CDI 1.2)
++ Jetty 9.4.58.v20250814
++ Weld 2.4.8.Final (CDI 1.2)
++ Java 17 (LTS)
 
 ### Running this example Application
 
-+ Check if Java 8 is used
++ Check if Java 17 is used
 + Clone this git repository
 + Go to project directory, `java8-examples`
 + Execute `mvn clean install`
@@ -61,8 +62,14 @@ are not consistent.
 ### How to setup a CDI enabled application?
 
 + Add `javax.enterprise:cdi-api:1.2`, scope `provided` to your (maven) dependencies
-+ Add `org.jboss.weld.servlet:weld-servlet:2.2.7.Final` as a dependency for
++ Add `javax.annotation:javax.annotation-api:1.3.2`, scope `provided` (`@PostConstruct` is no
+longer part of the JDK since Java 11)
++ Add `org.jboss.weld.servlet:weld-servlet:2.4.8.Final` as a dependency for
 `jetty-maven-plugin`
++ Expose `javax.enterprise.`/`javax.decorator.` and Jetty's `Decorator` to the webapp classloader
+(see `WEB-INF/jetty-context.xml`); Jetty 9.4 hides them as server classes by default
++ Run the JVM with `--add-opens java.base/java.lang=ALL-UNNAMED` so Weld can define proxy
+classes on Java 17 (configured in `.mvn/jvm.config`)
 + Managed beans must have a default constructor and may not be `final` (must be proxiable)
 + Managed beans declaring a passivating scope must be passivation capable, 
 implement `java.io.Serializable` and all `@Interceptors` must be Serializable as well
@@ -74,6 +81,8 @@ implement `java.io.Serializable` and all `@Interceptors` must be Serializable as
     + Listeners (Jetty 9.1.1+)
 + [Jetty 9.1.0+ requires Weld 2.2.0+](https://issues.jboss.org/browse/WELD-1561)
 + Transactional events not available in a non-Java EE environment 
++ With Jetty 9.4 / Weld 2.4 the `java:comp/BeanManager` JNDI lookup done by `DefaultGreeting`
+fails (`WELD-001300`); `@Inject BeanManager` works. Use injection rather than JNDI.
 
 ### References
 
