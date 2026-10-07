@@ -3,10 +3,14 @@
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
     <!-- Equivalent of the Jetty 9.4 distribution 'cdi' module: expose the jetty-cdi
          ServletContainerInitializer (CdiSpiDecorator mode) to the webapp -->
-    <Call name="addSystemClass">
-        <Arg>org.eclipse.jetty.cdi.CdiServletContainerInitializer</Arg>
+    <Call name="getSystemClasspathPattern">
+        <Call name="add">
+            <Arg>org.eclipse.jetty.cdi.CdiServletContainerInitializer</Arg>
+        </Call>
     </Call>
-    <Call name="addServerClass">
-        <Arg>-org.eclipse.jetty.cdi.CdiServletContainerInitializer</Arg>
+    <Call name="getServerClasspathPattern">
+        <Call name="add">
+            <Arg>-org.eclipse.jetty.cdi.CdiServletContainerInitializer</Arg>
+        </Call>
     </Call>
 </Configure>
