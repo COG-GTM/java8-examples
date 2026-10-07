@@ -5,12 +5,13 @@ This is an simple setup for testing CDI ([Red Hat JBoss Weld]
 (https://docs.jboss.org/weld/reference/latest/en-US/html/)) and Jetty using the 
 [jetty-maven-plugin](http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html)
 
-+ Jetty 9.2.5.v20141112
-+ Weld 2.2.7.Final (CDI 1.2)
++ Java 17 (LTS)
++ Jetty 9.4.58.v20250814 (`jetty-maven-plugin` + `jetty-cdi`)
++ Weld 3.1.9.Final (`weld-servlet-shaded`, CDI 2.0, `javax.*` namespace)
 
 ### Running this example Application
 
-+ Check if Java 8 is used
++ Check if Java 17 is used
 + Clone this git repository
 + Go to project directory, `java8-examples`
 + Execute `mvn clean install`
@@ -18,34 +19,33 @@ This is an simple setup for testing CDI ([Red Hat JBoss Weld]
 + Start Jetty and go to `http://localhost:8080/` to view the result in your browser
 
 ````bash
+$ java -version
+openjdk version "17.0.20.1" 2026-08-18
+OpenJDK Runtime Environment (build 17.0.20.1+1-1-22.04-Ubuntu)
+OpenJDK 64-Bit Server VM (build 17.0.20.1+1-1-22.04-Ubuntu, mixed mode, sharing)
 $ mvn --version
-Apache Maven 3.2.2 (45f7c06d68e745d05611f7fd14efb6594181933e; 2014-06-17T15:51:42+02:00)
-Maven home: /usr/share/maven/apache-maven-3.2.2
-Java version: 1.8.0_25, vendor: Oracle Corporation
-Java home: /usr/lib/jvm/jdk1.8.0_25/jre
-Default locale: en_US, platform encoding: UTF-8
-OS name: "linux", version: "3.13.0-43-generic", arch: "amd64", family: "unix"
-$ git clone https://github.com/rmuller/java8-examples.git
+Apache Maven 3.6.3
+Maven home: /usr/share/maven
+Java version: 17.0.20.1, vendor: Ubuntu, runtime: /usr/lib/jvm/java-17-openjdk-amd64
+...
+$ git clone https://github.com/COG-GTM/java8-examples.git
 Cloning into 'java8-examples'...
-remote: Counting objects: 43, done.
-remote: Compressing objects: 100% (26/26), done.
-remote: Total 43 (delta 4), reused 38 (delta 2)
-Unpacking objects: 100% (43/43), done.
-Checking connectivity... done.
 $ cd java8-examples/
 $ mvn clean install
 [INFO] Scanning for projects...
 ...
+[INFO] Compiling 3 source files with javac [debug release 17] to target/classes
+...
+[INFO] BUILD SUCCESS
 $ cd jetty-maven-cdi/
 $ mvn jetty:run
 [INFO] Scanning for projects...
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building jetty-maven-cdi 1.0.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
 ...
-2014-12-26 15:49:20.915:INFO:oejs.ServerConnector:main: Started ServerConnector@2a685eba{HTTP/1.1}{0.0.0.0:8080}
-2014-12-26 15:49:20.916:INFO:oejs.Server:main: Started @3828ms
+[INFO] jetty-9.4.58.v20250814; ... jvm 17.0.20.1+1-1-22.04-Ubuntu
+...
+INFO: WELD-000900: 3.1.9 (Final)
+INFO: WELD-ENV-001212: Jetty CdiDecoratingListener support detected, CDI injection will be available in Listeners, Servlets and Filters.
+...
 [INFO] Started Jetty Server
 ````
 
@@ -60,9 +60,11 @@ are not consistent.
 
 ### How to setup a CDI enabled application?
 
-+ Add `javax.enterprise:cdi-api:1.2`, scope `provided` to your (maven) dependencies
-+ Add `org.jboss.weld.servlet:weld-servlet:2.2.7.Final` as a dependency for
-`jetty-maven-plugin`
++ Add `javax.enterprise:cdi-api:2.0.SP1`, scope `provided` to your (maven) dependencies
++ Add `org.jboss.weld.servlet:weld-servlet-shaded:3.1.9.Final`, scope `runtime`, to your
+(maven) dependencies (Weld is deployed in `WEB-INF/lib`)
++ Add `org.eclipse.jetty:jetty-cdi` as a dependency for `jetty-maven-plugin` and set the
+context init parameter `org.eclipse.jetty.cdi=CdiDecoratingListener` (see `jetty-context.xml`)
 + Managed beans must have a default constructor and may not be `final` (must be proxiable)
 + Managed beans declaring a passivating scope must be passivation capable, 
 implement `java.io.Serializable` and all `@Interceptors` must be Serializable as well
@@ -73,6 +75,7 @@ implement `java.io.Serializable` and all `@Interceptors` must be Serializable as
     + Servlets and Filters (Jetty 7.2+)
     + Listeners (Jetty 9.1.1+)
 + [Jetty 9.1.0+ requires Weld 2.2.0+](https://issues.jboss.org/browse/WELD-1561)
++ Jetty 9.4.20+ integrates CDI via `jetty-cdi` (`CdiDecoratingListener`), supported by Weld 3.1.2+
 + Transactional events not available in a non-Java EE environment 
 
 ### References
