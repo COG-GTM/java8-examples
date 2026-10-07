@@ -17,13 +17,13 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
+            <version>4.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <version>1.2</version>
+            <version>2.0.SP1</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -32,6 +32,21 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- Jetty 9.4's jetty-maven-plugin hides javax.enterprise.* plugin dependencies from the
+             webapp, so Weld must be deployed inside the webapp (WEB-INF/lib) -->
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet-core</artifactId>
+            <version>3.1.9.Final</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- javax.annotation (e.g. @PostConstruct) was removed from the JDK in Java 11 -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -39,7 +54,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.4.0</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
@@ -47,7 +62,7 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.2.5.v20141112</version>
+                <version>9.4.54.v20240208</version>
                 <configuration>
                     <!--
                     No need to explicitly configure this if using default name 'jetty-env.xml'
@@ -59,10 +74,11 @@
                     <contextXml>src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
                 </configuration>
                 <dependencies>
+                    <!-- Jetty 9.4 CDI integration (CdiSpiDecorator): injects into Servlets, Filters and Listeners -->
                     <dependency>
-                        <groupId>org.jboss.weld.servlet</groupId>
-                        <artifactId>weld-servlet</artifactId>
-                        <version>2.2.7.Final</version>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-cdi</artifactId>
+                        <version>9.4.54.v20240208</version>
                     </dependency>
                 </dependencies>
             </plugin>

@@ -1,12 +1,14 @@
 README
 ======
 
-This repository contains simple example projects of various Java 8 based projects.
+This repository contains simple example projects of various Java based projects.
+Originally written for Java 8, the examples now target **Java 17** (`maven.compiler.release=17`)
+and still use the `javax.*` namespace (no Jakarta EE migration).
 
-All examples are developed and tested using the following software stack:
+All examples are built and tested using the following software stack:
 
-+ Ubuntu 14.04.1 LTS
-+ Oracle Java (JDK) 1.8.0_25
-+ NetBeans IDE 8.0.2 (Build 201411181905)
-+ Apache Maven 3.2.2
++ OpenJDK 17 (the build enforces JDK 17+ via `maven-enforcer-plugin`)
++ Apache Maven 3.6.3+
+
+Build all modules from the repository root with `mvn clean install`.
 

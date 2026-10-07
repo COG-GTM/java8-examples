@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Configure PUBLIC "-" "http://www.eclipse.org/jetty/configure_9_0.dtd">
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://www.eclipse.org/jetty/configure_9_3.dtd">
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
-    <Set name="serverClasses">
-        <Array type="java.lang.String">
-            <Item>-org.eclipse.jetty.servlet.ServletContextHandler.Decorator</Item>
-        </Array>
-    </Set>
+    <!-- Equivalent of the Jetty 9.4 distribution 'cdi' module: expose the jetty-cdi
+         ServletContainerInitializer (CdiSpiDecorator mode) to the webapp -->
+    <Call name="getSystemClasspathPattern">
+        <Call name="add">
+            <Arg>org.eclipse.jetty.cdi.CdiServletContainerInitializer</Arg>
+        </Call>
+    </Call>
+    <Call name="getServerClasspathPattern">
+        <Call name="add">
+            <Arg>-org.eclipse.jetty.cdi.CdiServletContainerInitializer</Arg>
+        </Call>
+    </Call>
 </Configure>
