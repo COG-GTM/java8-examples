@@ -5,12 +5,13 @@ This is an simple setup for testing CDI ([Red Hat JBoss Weld]
 (https://docs.jboss.org/weld/reference/latest/en-US/html/)) and Jetty using the 
 [jetty-maven-plugin](http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html)
 
-+ Jetty 9.2.5.v20141112
-+ Weld 2.2.7.Final (CDI 1.2)
++ Java 17 (LTS)
++ Jetty 9.4.58.v20250814 (`jetty-maven-plugin` + `jetty-cdi`)
++ Weld 3.1.9.Final (`weld-servlet-shaded`, CDI 2.0, `javax.*` namespace)
 
 ### Running this example Application
 
-+ Check if Java 8 is used
++ Check if Java 17 is used
 + Clone this git repository
 + Go to project directory, `java8-examples`
 + Execute `mvn clean install`
@@ -60,9 +61,11 @@ are not consistent.
 
 ### How to setup a CDI enabled application?
 
-+ Add `javax.enterprise:cdi-api:1.2`, scope `provided` to your (maven) dependencies
-+ Add `org.jboss.weld.servlet:weld-servlet:2.2.7.Final` as a dependency for
-`jetty-maven-plugin`
++ Add `javax.enterprise:cdi-api:2.0.SP1`, scope `provided` to your (maven) dependencies
++ Add `org.jboss.weld.servlet:weld-servlet-shaded:3.1.9.Final`, scope `runtime`, to your
+(maven) dependencies (Weld is deployed in `WEB-INF/lib`)
++ Add `org.eclipse.jetty:jetty-cdi` as a dependency for `jetty-maven-plugin` and set the
+context init parameter `org.eclipse.jetty.cdi=CdiDecoratingListener` (see `jetty-context.xml`)
 + Managed beans must have a default constructor and may not be `final` (must be proxiable)
 + Managed beans declaring a passivating scope must be passivation capable, 
 implement `java.io.Serializable` and all `@Interceptors` must be Serializable as well
@@ -73,6 +76,7 @@ implement `java.io.Serializable` and all `@Interceptors` must be Serializable as
     + Servlets and Filters (Jetty 7.2+)
     + Listeners (Jetty 9.1.1+)
 + [Jetty 9.1.0+ requires Weld 2.2.0+](https://issues.jboss.org/browse/WELD-1561)
++ Jetty 9.4.20+ integrates CDI via `jetty-cdi` (`CdiDecoratingListener`), supported by Weld 3.1.2+
 + Transactional events not available in a non-Java EE environment 
 
 ### References
